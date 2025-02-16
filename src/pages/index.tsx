@@ -25,8 +25,8 @@ interface Result {
 
 export default function CompoundInterestCalculator() {
   const [years, setYears] = useState(10);
-  const [initialAmount, setInitialAmount] = useState(10000);
-  const [interestRate, setInterestRate] = useState(10);
+  const [initialAmount, setInitialAmount] = useState(0);
+  const [interestRate, setInterestRate] = useState(8);
   const [results, setResults] = useState<Result[]>([]);
   const [rangeStart, setRangeStart] = useState(1);
   const [rangeEnd, setRangeEnd] = useState(10);
@@ -74,25 +74,26 @@ export default function CompoundInterestCalculator() {
   }, [years]);
 
   const calculateCompoundInterest = () => {
-    if (!initialAmount || !years || !interestRate) {
+    if (initialAmount < 0 || years <= 0 || interestRate < 0) {
       console.error("กรุณากรอกค่าที่ถูกต้อง");
       return;
     }
-
-    let balance = initialAmount;
+  
+    let balance = initialAmount; // เงินต้นเริ่มต้น เป็น 0 ได้
     const newResults = [];
-
+  
     for (let year = 1; year <= years; year++) {
       let monthly = monthlyContributions[year] ?? 0;
       for (let month = 1; month <= 12; month++) {
         balance += monthly;
         balance *= 1 + interestRate / 100 / 12;
       }
+  
       newResults.push({ year, balance: parseFloat(balance.toFixed(2)) });
     }
-
+  
     setResults(newResults);
-  };
+  };  
 
   // คำนวณทันทีเมื่อ component โหลด
   useEffect(() => {
